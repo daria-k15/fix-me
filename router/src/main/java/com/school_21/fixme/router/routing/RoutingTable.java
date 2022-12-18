@@ -9,6 +9,8 @@ public class RoutingTable {
     private Integer brokerCount = 0;
     private Integer marketCount = 0;
 
+    public RoutingTable(){}
+
     public void addEntry(RouteEntry entry){
         entry.setId(generateId(entry.getType()));
         this.routeEntries.add(entry);

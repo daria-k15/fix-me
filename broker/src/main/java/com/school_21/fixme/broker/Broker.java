@@ -6,43 +6,45 @@ import com.school_21.fixme.market.markets.Market;
 import com.school_21.fixme.utils.FixProtocol;
 import com.school_21.fixme.utils.orders.OrderType;
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Broker {
     public static FixProtocol fixProtocol;
-    public static BrokerThread thread;
-
-    private static BrokerUtils utils;
-    private static Boolean exitCase;
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
+    private static Socket socket;
     private static PrintWriter out;
     private static BufferedReader in;
 
     private static final Logger log = Logger.getLogger("Broker");
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         log.info("--------- Broker is starting---------\n");
 
-//        try{
-//            Socket socket = new Socket("localhost", 5000);
-//            out = new PrintWriter(socket.getOutputStream(), true);
-//            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            String serverResponse = in.readLine();
-//            utils.assignRouteServiceId(serverResponse);
-//            log.info(String.format("Broker connected! BrokerId: %s, ServiceId: %s", BrokerAccount.brokerRouteId, BrokerAccount.brokerServiceId));
-//        } catch (Exception e){
-//            log.severe(String.format("Broker couldn't start, router might be unavailable: %s", e.getMessage()));
-//            System.exit(1);
-//        }
+        try{
+            socket = new Socket("localhost", 5000);
+        } catch (Exception e){
+            log.severe(String.format("Broker couldn't start, router might be unavailable: %s", e.getMessage()));
+            System.exit(1);
+        }
+        out = new PrintWriter(socket.getOutputStream());
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String serverResponse = in.readLine();
+        System.out.println("Received: " + serverResponse);
 
+        BrokerUtils.assignRouteServiceId(serverResponse);
+        log.info(String.format("Broker connected! BrokerId: %s, ServiceId: %s", BrokerAccount.brokerRouteId, BrokerAccount.brokerServiceId));
         fixProtocol = new FixProtocol(Integer.toString(BrokerAccount.brokerRouteId));
+        System.out.println("Press any key to continue");
+        scanner.nextLine();
 
         while (true){
             String fixMessage;
             OrderType orderType = selectOrderType();
             String instrument = selectInstrument(new CryptoMarket()).getName();
-            Integer amount = getAmount();
+            Integer amount = getAmount(orderType);
             Double price = getPrice(orderType);
 
             if (orderType.equals(OrderType.BUY)){
@@ -99,19 +101,25 @@ public class Broker {
         }
         while (true) {
             try {
-                System.out.print(order);
-                return Double.parseDouble(scanner.nextLine());
+                System.out.println(order);
+                return scanner.nextDouble();
             } catch (Exception e) {
                 System.out.println("Unit must be a number!");
             }
         }
     }
 
-    private static Integer getAmount() {
+    private static Integer getAmount(OrderType type) {
+        String order;
+        if (type.equals(OrderType.BUY)){
+            order = "How many units would you like to buy: ";
+        } else {
+            order = "How many units would you like to sell: ";
+        }
         while (true) {
             try {
-                System.out.println("How many units would you like to buy or sell?");
-                return Integer.parseInt(scanner.nextLine());
+                System.out.println(order);
+                return scanner.nextInt();
             } catch (Exception e){
                 System.out.println("Must be an integer!");
             }

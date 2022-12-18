@@ -1,28 +1,28 @@
 package com.school_21.fixme.router;
 
 
-import java.net.ServerSocket;
-import java.net.Socket;
+import com.school_21.fixme.router.routing.RoutingTable;
+import com.school_21.fixme.router.sockets.SocketServer;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class Router {
+    private static final Logger log = Logger.getLogger("Router");
+    public static final RoutingTable routingTable = new RoutingTable();
+    public static final ExecutorService executor = Executors.newFixedThreadPool(100);
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-    }
+        log.info("-----Router is starting-----");
 
-    class BrockerSocker implements Runnable {
-        private ServerSocket brokerSocket;
-
-        BrockerSocker(ServerSocket broker) {
-            this.brokerSocket = broker;
-        }
-
-        public void run() {
-            try {
-                Socket brokerSocket;
-                brokerSocket = new Socket("localhost", 5000);
-            } catch (Exception e){
-
-            }
+        executor.submit(new SocketServer(5000, "broker"));
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e){
+            log.warning("Interrupted request: " + e.getMessage());
+            System.exit(1);
         }
     }
 }

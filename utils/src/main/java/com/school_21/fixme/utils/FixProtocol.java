@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 public class FixProtocol {
     private String userId;
@@ -164,7 +166,7 @@ public class FixProtocol {
         body.append(AMOUNT + amount + MSG_DELIMITER);
         body.append(PRICE + price + MSG_DELIMITER);
         String header = constructMessage(body.toString(), "1", ++this.msgSeqNum);
-        return header + body + MSG_CHECKSUM +checkSumGenerator(header + body + MSG_DELIMITER);
+        return header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER);
     }
 
     public String saleMessage(String itemId, String amount, String price, String brokerRouteId) {
@@ -177,5 +179,16 @@ public class FixProtocol {
 
         String header = constructMessage(body.toString(), "2", ++this.msgSeqNum);
         return header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER);
+    }
+
+    public String logonMessage(String id){
+        StringBuilder body = new StringBuilder();
+        body.append(USERNAME + id + MSG_DELIMITER);
+        String header = constructMessage(body.toString(), "L", ++this.msgSeqNum);
+        return header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER);
+    }
+
+    public List<String> initLogon(String msg){
+        return Arrays.asList(msg.split("\\|"));
     }
 }
