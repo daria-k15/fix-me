@@ -4,11 +4,14 @@ import com.school_21.fixme.market.markets.CryptoMarket;
 import com.school_21.fixme.market.markets.Instrument;
 import com.school_21.fixme.market.markets.Market;
 import com.school_21.fixme.utils.FixProtocol;
+import com.school_21.fixme.utils.messages.Message;
 import com.school_21.fixme.utils.orders.OrderType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -18,6 +21,8 @@ public class Broker {
     private static Socket socket;
     private static PrintWriter out;
     private static BufferedReader in;
+
+    private static String id;
 
     private static final Logger log = Logger.getLogger("Broker");
     public static void main(String[] args) throws Exception {
@@ -34,26 +39,20 @@ public class Broker {
         String serverResponse = in.readLine();
         System.out.println("Received: " + serverResponse);
 
-        BrokerUtils.assignRouteServiceId(serverResponse);
-        log.info(String.format("Broker connected! BrokerId: %s, ServiceId: %s", BrokerAccount.brokerRouteId, BrokerAccount.brokerServiceId));
-        fixProtocol = new FixProtocol(Integer.toString(BrokerAccount.brokerRouteId));
-        System.out.println("Press any key to continue");
+        receivedMessage(serverResponse);
         scanner.nextLine();
 
         while (true){
-            String fixMessage;
             OrderType orderType = selectOrderType();
             String instrument = selectInstrument(new CryptoMarket()).getName();
             Integer amount = getAmount(orderType);
             Double price = getPrice(orderType);
 
-            if (orderType.equals(OrderType.BUY)){
-                fixMessage = fixProtocol.purchaseMessage(instrument, amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId));
-                System.out.println(fixMessage);
-            } else if (orderType.equals(OrderType.SELL)) {
-                fixMessage = fixProtocol.saleMessage(instrument, amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId));
-                System.out.println(fixMessage);
-            }
+            Message fixMessage = FixProtocol.orderMessage(Integer.toString(BrokerAccount.brokerRouteId), instrument,
+                    amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId), orderType);
+            System.out.println(fixMessage);
+            out.println(fixMessage);
+            out.flush();
         }
     }
 
@@ -125,4 +124,23 @@ public class Broker {
             }
         }
     }
+
+    private static void receivedMessage(String logonMsg){
+        Message msg = new Message(logonMsg);
+        if (msg.get("35").equals("L")){
+            Broker.id = msg.get("553");
+            log.info(String.format("Broker connected! BrokerId: %s", BrokerAccount.brokerRouteId));
+        }
+    }
+
+//    private static void handleRouterReply() {
+//        List<String> msg = null;
+//
+//        try{
+//            msg = Arrays.asList(in.readLine().split("\\|"));
+//        } catch (Exception e){
+//
+//        }
+//        String msgType = msg.get("35");
+//    }
 }

@@ -17,6 +17,11 @@ public class Request {
         this.message = message;
     }
 
+    public String socketName(){
+        String ip = this.socket.getInetAddress().toString();
+        int port = socket.getPort();
+        return String.format("%s:%d", ip, port);
+    }
     public boolean markedHandled() {
         return this.handled = true;
     }

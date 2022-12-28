@@ -46,7 +46,7 @@
                             <manifest>
                                 <addClasspath>true</addClasspath>
                                 <classpathPrefix>lib/</classpathPrefix>
-                                <mainClass>com.school_21.fixme.market.Main</mainClass>
+                                <mainClass>com.school_21.fixme.market.App</mainClass>
                             </manifest>
                         </archive>
                     </configuration>

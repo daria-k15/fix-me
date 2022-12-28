@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 public class SocketServer implements Runnable {
     private static final Logger log = Logger.getLogger("Router");
-    private FixProtocol fixProtocol;
 
     private Integer port;
     private Integer backlog;
@@ -36,6 +35,7 @@ public class SocketServer implements Runnable {
             socket = new ServerSocket(this.port, this.backlog, Inet4Address.getByName("0.0.0.0"));
             while (true) {
                 Socket clientSocket = socket.accept();
+
                 String ip = clientSocket.getInetAddress().toString();
                 log.info(String.format("Got connection from %s:%d", ip, clientSocket.getPort()));
                 RouteEntry entry;
@@ -44,10 +44,16 @@ public class SocketServer implements Runnable {
                 } else {
                     entry = new MarketRouteEntry(clientSocket);
                 }
-                int serviceId = Counter.generateServiceId();
-                String routeId = Counter.getBrokerRouteID(clientSocket);
+                Router.routingTable.addEntry(entry);
+
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println(Counter.brokerCounter + "-" + serviceId);
+                out.println(FixProtocol.logonMessage(entry.getId()));
+                Router.executor.submit(new ClientSocketMaintainer(clientSocket));
+//                Router.executor.submit(n)
+//                int serviceId = Counter.generateServiceId();
+//                String routeId = Counter.getBrokerRouteID(clientSocket);
+//                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+//                out.println(Counter.brokerCounter + "-" + serviceId);
 //                fixProtocol = new FixProtocol(entry.getId());
 //                // Add routing entry to Application's routing table, returns ID
 //                Router.routingTable.addEntry(entry);

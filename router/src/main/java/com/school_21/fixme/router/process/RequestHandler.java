@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @AllArgsConstructor
 public abstract class RequestHandler {
-    private final RequestHandler next;
+    protected final RequestHandler next;
 
     public void handleRequest(Request request){
         if (next != null){
@@ -20,5 +20,5 @@ public abstract class RequestHandler {
         log.info("{} handling request {}", this, request);
     }
 
-    protected abstract Response process(Request request);
+    public abstract Response process(Request request);
 }

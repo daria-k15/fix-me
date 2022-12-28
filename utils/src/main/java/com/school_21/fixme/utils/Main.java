@@ -2,8 +2,6 @@ package com.school_21.fixme.utils;
 
 import com.school_21.fixme.utils.exceptions.InvalidBodyLengthException;
 
-import static com.school_21.fixme.utils.FixProtocol.isInteger;
-import static com.school_21.fixme.utils.FixProtocol.isNumeric;
 
 public class Main {
     private static final String MSG_DELIMITER = "|";
