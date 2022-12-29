@@ -58,8 +58,8 @@ public class FixProtocol {
         }
     }
 
-    private static void checkSumValidator(String input) throws InvalidCheckSumException {
-        String[] values = input.split(MSG_DELIMITER + MSG_CHECKSUM);
+    public static void checkSumValidator(String input) throws InvalidCheckSumException {
+        String[] values = input.split("\\|10=");
 
         if (values.length != 2) {
             throw new InvalidCheckSumException("Invalid checksum!");
@@ -72,7 +72,7 @@ public class FixProtocol {
         }
     }
 
-    private static String checkSumGenerator(String input) {
+    public static String checkSumGenerator(String input) {
         String msg = input.replace(MSG_DELIMITER, "\u0001");
         byte[] msgBytes = msg.getBytes(StandardCharsets.US_ASCII);
 
@@ -160,7 +160,7 @@ public class FixProtocol {
         body.append(AMOUNT + amount + MSG_DELIMITER);
         body.append(PRICE + price + MSG_DELIMITER);
         String header = constructMessage(body.toString(), type);
-        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER));
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
 //    public Message saleMessage(String userId, String itemId, String amount, String price, String brokerRouteId) {
@@ -179,14 +179,14 @@ public class FixProtocol {
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + id + MSG_DELIMITER);
         String header = constructMessage(body.toString(), OrderType.LOGON);
-        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER));
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
     public static Message failResponse(String id){
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + id + MSG_DELIMITER);
         String header = constructMessage(body.toString(), OrderType.ERROR);
-        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER));
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
     public List<String> initLogon(String msg) {

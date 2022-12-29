@@ -18,6 +18,7 @@ public class Router {
         log.info("-----Router is starting-----");
 
         executor.submit(new SocketServer(5000, "broker"));
+        executor.submit(new SocketServer(5001, "market"));
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e){

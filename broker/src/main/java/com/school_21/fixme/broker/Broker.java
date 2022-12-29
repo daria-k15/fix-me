@@ -10,13 +10,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Broker {
-    public static FixProtocol fixProtocol;
     private static final Scanner scanner = new Scanner(System.in);
     private static Socket socket;
     private static PrintWriter out;
@@ -29,7 +26,7 @@ public class Broker {
         log.info("--------- Broker is starting---------\n");
 
         try{
-            socket = new Socket("localhost", 5000);
+            socket = new Socket("127.0.0.1", 5000);
         } catch (Exception e){
             log.severe(String.format("Broker couldn't start, router might be unavailable: %s", e.getMessage()));
             System.exit(1);
@@ -48,7 +45,7 @@ public class Broker {
             Integer amount = getAmount(orderType);
             Double price = getPrice(orderType);
 
-            Message fixMessage = FixProtocol.orderMessage(Integer.toString(BrokerAccount.brokerRouteId), instrument,
+            Message fixMessage = FixProtocol.orderMessage(Broker.id, instrument,
                     amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId), orderType);
             System.out.println(fixMessage);
             out.println(fixMessage);
