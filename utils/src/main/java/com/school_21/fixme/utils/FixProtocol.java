@@ -26,6 +26,7 @@ public class FixProtocol {
     private static final String ITEM_ID = "100=";
     private static final String AMOUNT = "101=";
     private static final String PRICE = "102=";
+    private static final String MARKET_NAME = "103=Crypto";
 
     private static boolean isNumeric(String str) {
         try {
@@ -159,6 +160,7 @@ public class FixProtocol {
         body.append(ITEM_ID + itemId + MSG_DELIMITER);
         body.append(AMOUNT + amount + MSG_DELIMITER);
         body.append(PRICE + price + MSG_DELIMITER);
+        body.append(MARKET_NAME + MSG_DELIMITER);
         String header = constructMessage(body.toString(), type);
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
@@ -189,7 +191,11 @@ public class FixProtocol {
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
-    public List<String> initLogon(String msg) {
-        return Arrays.asList(msg.split("\\|"));
+    public static Message identifyMessage(String id, String name) {
+        StringBuilder body = new StringBuilder();
+        body.append(USERNAME + id + MSG_DELIMITER);
+        body.append(MARKET_NAME + MSG_DELIMITER);
+        String header = constructMessage(body.toString(), OrderType.IDENTIFY);
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 }

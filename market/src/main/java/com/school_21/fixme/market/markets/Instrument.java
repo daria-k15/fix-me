@@ -2,6 +2,8 @@ package com.school_21.fixme.market.markets;
 
 import lombok.Data;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @Data
 public class Instrument {
     private String name;
@@ -13,6 +15,9 @@ public class Instrument {
     public Instrument(String code, String name){
         this.code = code;
         this.name = name;
+        this.availableAmount = ThreadLocalRandom.current().nextInt(0, 1000);
+        this.minBuyPrice = ThreadLocalRandom.current().nextDouble(0, 1000);
+        this.maxSellPrice = ThreadLocalRandom.current().nextDouble(0, 1000);
     }
 
 }

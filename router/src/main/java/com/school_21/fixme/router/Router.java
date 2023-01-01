@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class Router {
-    private static final Logger log = Logger.getLogger("Router");
+    public static final Logger log = Logger.getLogger("Router");
     public static final RoutingTable routingTable = new RoutingTable();
     public static final ExecutorService executor = Executors.newFixedThreadPool(100);
 

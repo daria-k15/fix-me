@@ -44,21 +44,15 @@ public class SocketServer implements Runnable {
                 } else {
                     entry = new MarketRouteEntry(clientSocket);
                 }
+                // Add routing entry to Application's routing table, returns ID
                 Router.routingTable.addEntry(entry);
 
+                // Send a logon message to client using PrintWriter
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 out.println(FixProtocol.logonMessage(entry.getId()));
+
+                // Spawn a thread to listen for incoming messages from client, handle replies and routing as well
                 Router.executor.submit(new ClientSocketMaintainer(clientSocket));
-//                Router.executor.submit(n)
-//                int serviceId = Counter.generateServiceId();
-//                String routeId = Counter.getBrokerRouteID(clientSocket);
-//                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-//                out.println(Counter.brokerCounter + "-" + serviceId);
-//                fixProtocol = new FixProtocol(entry.getId());
-//                // Add routing entry to Application's routing table, returns ID
-//                Router.routingTable.addEntry(entry);
-//                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-//                out.println(fixProtocol.logonMessage(entry.getId()));
             }
         } catch (Exception e) {
             log.severe("Couldn't start Broker Server: " + e.getMessage());

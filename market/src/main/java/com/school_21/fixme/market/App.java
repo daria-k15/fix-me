@@ -1,12 +1,10 @@
 package com.school_21.fixme.market;
 
 import com.school_21.fixme.market.markets.CryptoMarket;
+import com.school_21.fixme.market.markets.Instrument;
 import com.school_21.fixme.utils.FixProtocol;
 import com.school_21.fixme.utils.messages.Message;
-import com.school_21.fixme.utils.orders.OrderType;
 import com.school_21.fixme.utils.orders.Orders;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,10 +16,9 @@ public class App {
     private static Socket socket;
     private static PrintWriter out;
     private static BufferedReader in;
-    private static CryptoMarket market;
+    private static CryptoMarket market = new CryptoMarket();
     public static final Logger log = Logger.getLogger("Market");
 
-    //TODO should add Market to msg!!!!!!!!!!!
     public static void main(String[] args) throws Exception {
         log.info("----Market is starting-----");
 
@@ -36,6 +33,8 @@ public class App {
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+        receiveAndSetLogonId();
+        identifyMarket();
         while (true){
             try {
                 log.info("Waiting for request");
@@ -56,8 +55,11 @@ public class App {
 
                 Orders order = new Orders(msg);
                 switch (msg.get("35")){
-                    case "B":
+                    case "1":
                         log.info("processing buy order");
+                        if (market.instrumentByCode(msg.get("I")) == null) {
+                            throw new Exception("Cannot found instrument");
+                        }
 
                 }
             } catch (Exception e){
@@ -72,13 +74,20 @@ public class App {
         log.info(String.format("Market [%s] added to routing table", market.getId()));
     }
 
+    private static void identifyMarket() {
+        Message name = FixProtocol.identifyMessage(App.market.getId(), App.market.getName());
+        out.println(name);
+        log.info(String.format("Sent market name [%s] to router", App.market.getName()));
+    }
+
     private static Message validateInitialMessage(Message msg) {
-//        String market = msg.get("100");
+        String market = msg.get("103");
         String instrument = msg.get("100");
         String amount = msg.get("101");
         String price = msg.get("102");
         String clientId = msg.get("109");
 
+        if (market.isEmpty()) return FixProtocol.failResponse("Market hasn't been specified");
         if (instrument.isEmpty()) return FixProtocol.failResponse("Instrument hasn't been specified");
         if (amount.isEmpty()) return FixProtocol.failResponse("Amount hasn't been specified");
         if (price.isEmpty()) return FixProtocol.failResponse("Price hasn't been specified");
@@ -86,4 +95,11 @@ public class App {
         return msg;
     }
 
+    private static void tryBuyOrder(Orders order) {
+        Instrument instrument = market.instrumentByCode(order.getInstrument());
+
+        if (!order.isValid()){
+
+        }
+    }
 }

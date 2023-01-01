@@ -11,7 +11,7 @@ public class RouteEntry {
     private String idTag;
     private String id;
 
-    private String name;
+    private String name = "";
 
     public RouteEntry(Socket socket, String type){
         this.socket = socket;

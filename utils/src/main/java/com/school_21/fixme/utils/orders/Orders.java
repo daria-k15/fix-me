@@ -1,7 +1,9 @@
 package com.school_21.fixme.utils.orders;
 
 import com.school_21.fixme.utils.messages.Message;
+import lombok.Data;
 
+@Data
 public class Orders {
     private boolean valid = true;
     private String market;
@@ -20,7 +22,7 @@ public class Orders {
     }
 
     public Orders(Message message) {
-//        this.market =     message.get("M");
+        this.market =     message.get("103");
         this.instrument = message.get("100");
         this.quantity =     message.get("101");
         this.price =      message.get("102");

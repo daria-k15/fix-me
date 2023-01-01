@@ -1,6 +1,8 @@
 package com.school_21.fixme.router.sockets;
 
+import com.school_21.fixme.router.Router;
 import com.school_21.fixme.router.process.ClassificationProcessor;
+import com.school_21.fixme.router.process.RelayProcessor;
 import com.school_21.fixme.router.process.RequestHandler;
 import com.school_21.fixme.router.process.ValidationProcessor;
 import com.school_21.fixme.router.request.Request;
@@ -29,7 +31,9 @@ public class ClientSocketMaintainer implements Runnable {
     public void run() {
         log.info(String.format("Starting socket maintainer for %s", socketName));
 
-        RequestHandler handler = new ValidationProcessor(new ClassificationProcessor(null));
+        RequestHandler handler = new ValidationProcessor(new ClassificationProcessor(
+                new RelayProcessor(null)
+        ));
 
         String inLine;
         try {
@@ -37,11 +41,15 @@ public class ClientSocketMaintainer implements Runnable {
             while((inLine = in.readLine()) != null) {
                 Response response = handler.process(new Request(socket, new Message(inLine)));
                 if (response != null){
+                    System.out.println(response);
                     response.send();
                 }
             }
         } catch (IOException e){
             log.severe(String.format("Got error while processing message from %s %s", socketName, e.getMessage()));
         }
+        // Delete RouteEntry when this thread is done processing
+        log.info(String.format("Socket maintainer for %s shutting down", socketName));
+        Router.routingTable.deleteEntry(this.socket);
     }
 }

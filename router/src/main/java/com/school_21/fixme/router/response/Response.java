@@ -18,5 +18,6 @@ public class Response {
 
     public void send() throws IOException{
         PrintWriter out = new PrintWriter(this.destination.getOutputStream(), true);
+        out.println(this.message);
     }
 }

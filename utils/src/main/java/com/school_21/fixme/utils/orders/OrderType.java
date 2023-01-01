@@ -1,11 +1,12 @@
 package com.school_21.fixme.utils.orders;
 
 public enum OrderType {
-    BUY("B"),
-    SELL("S"),
+    BUY("1"),
+    SELL("2"),
 
     LOGON("L"),
-    ERROR("E");
+    ERROR("E"),
+    IDENTIFY("I");
 
     public final String value;
 
