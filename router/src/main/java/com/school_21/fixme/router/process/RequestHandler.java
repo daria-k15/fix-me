@@ -16,9 +16,5 @@ public abstract class RequestHandler {
         }
     }
 
-    protected void printHandling(Request request) {
-        log.info("{} handling request {}", this, request);
-    }
-
     public abstract Response process(Request request);
 }

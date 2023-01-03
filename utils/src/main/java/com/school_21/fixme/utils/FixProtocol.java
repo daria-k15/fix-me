@@ -2,7 +2,6 @@ package com.school_21.fixme.utils;
 
 import com.school_21.fixme.utils.exceptions.InvalidBodyLengthException;
 import com.school_21.fixme.utils.exceptions.InvalidCheckSumException;
-import com.school_21.fixme.utils.exceptions.InvalidCodePosition;
 import com.school_21.fixme.utils.messages.Message;
 import com.school_21.fixme.utils.orders.OrderType;
 import com.school_21.fixme.utils.orders.Orders;
@@ -10,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 public class FixProtocol {
     private static final String MSG_HEADER = "8=FIX.21|";
@@ -20,14 +17,13 @@ public class FixProtocol {
     private static final String MSG_BODY_LENGTH = "9=";
     private static final String MSG_CHECKSUM = "10=";
     private static final String USERNAME = "553=";
-    private static final String HEARTBEAT = "108=";
     private static final String MSG_DELIMITER = "|";
     private static final String BROKER_ID = "554=";
-    private static final String INVALID_REQUEST = "560=1|";
     private static final String ITEM_ID = "100=";
     private static final String AMOUNT = "101=";
     private static final String PRICE = "102=";
     private static final String MARKET_NAME = "103=Crypto";
+    private static final String FAIL_REASON = "58=";
 
     private static boolean isNumeric(String str) {
         try {
@@ -131,29 +127,6 @@ public class FixProtocol {
         return header.toString();
     }
 
-//    public String logonMessage(int heartBeat) {
-//        //Encryption|UserID|Heartbeat|resetSeqNum|
-//
-//        StringBuilder body = new StringBuilder();
-//        if (heartBeat > 0) {
-//            body.append(HEARTBEAT + heartBeat + MSG_DELIMITER);
-//        } else {
-//            body.append(HEARTBEAT + "120|"); // timeout
-//        }
-//        String header = constructMessage(body.toString(), "A"); //type A - logon
-//        return header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER);
-//    }
-
-//    public String heartBeatMessage(int brokerRouteId) {
-//        StringBuilder body = new StringBuilder();
-//
-//        body.append(USERNAME + this.userId + MSG_DELIMITER);
-//        body.append(BROKER_ID + brokerRouteId + MSG_DELIMITER);
-//        body.append(INVALID_REQUEST);
-//        String header = constructMessage(body.toString(), "0", this.msgSeqNum++); // invalid request
-//        return header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER);
-//    }
-
     public static Message orderMessage(String userId, String itemId, String amount, String price, String brokerRouteId, OrderType type) {
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + userId + MSG_DELIMITER);
@@ -166,18 +139,6 @@ public class FixProtocol {
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
-//    public Message saleMessage(String userId, String itemId, String amount, String price, String brokerRouteId) {
-//        StringBuilder body = new StringBuilder();
-//        body.append(USERNAME + userId + MSG_DELIMITER);
-//        body.append(BROKER_ID + brokerRouteId + MSG_DELIMITER);
-//        body.append(ITEM_ID + itemId + MSG_DELIMITER);
-//        body.append(AMOUNT + amount + MSG_DELIMITER);
-//        body.append(PRICE + price + MSG_DELIMITER);
-//
-//        String header = constructMessage(body.toString(), "2");
-//        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body + MSG_DELIMITER));
-//    }
-
     public static Message logonMessage(String id) {
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + id + MSG_DELIMITER);
@@ -185,9 +146,17 @@ public class FixProtocol {
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
-    public static Message failResponse(String id){
+    public static Message failResponse(String id, String msg){
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + id + MSG_DELIMITER);
+        body.append(FAIL_REASON + msg + MSG_DELIMITER);
+        String header = constructMessage(body.toString(), OrderType.ERROR);
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
+    }
+
+    public static Message failResponse(String msg){
+        StringBuilder body = new StringBuilder();
+        body.append(FAIL_REASON + msg + MSG_DELIMITER);
         String header = constructMessage(body.toString(), OrderType.ERROR);
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }

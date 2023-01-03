@@ -12,22 +12,14 @@ public class Request {
     private Message message;
     private boolean handled;
 
-    public Request(Socket socket, Message message){
+    public Request(Socket socket, Message message) {
         this.socket = socket;
         this.message = message;
     }
 
-    public String socketName(){
+    public String socketName() {
         String ip = this.socket.getInetAddress().toString();
         int port = socket.getPort();
         return String.format("%s:%d", ip, port);
     }
-    public boolean markedHandled() {
-        return this.handled = true;
-    }
-
-    public boolean isHandled() {
-        return this.handled;
-    }
-
 }

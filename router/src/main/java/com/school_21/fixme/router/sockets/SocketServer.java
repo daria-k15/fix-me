@@ -1,6 +1,5 @@
 package com.school_21.fixme.router.sockets;
 
-import com.school_21.fixme.router.Counter;
 import com.school_21.fixme.router.Router;
 import com.school_21.fixme.router.routing.BrokerRouteEntry;
 import com.school_21.fixme.router.routing.MarketRouteEntry;
@@ -12,7 +11,6 @@ import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 @Slf4j
 public class SocketServer implements Runnable {
@@ -20,7 +18,7 @@ public class SocketServer implements Runnable {
     private Integer backlog;
     private String type;
 
-    public SocketServer(Integer port, String type){
+    public SocketServer(Integer port, String type) {
         this.port = port;
         this.type = type;
         this.backlog = 1000;
@@ -44,14 +42,11 @@ public class SocketServer implements Runnable {
                 } else {
                     entry = new MarketRouteEntry(clientSocket);
                 }
-                // Add routing entry to Application's routing table, returns ID
                 Router.routingTable.addEntry(entry);
 
-                // Send a logon message to client using PrintWriter
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 out.println(FixProtocol.logonMessage(entry.getId()));
 
-                // Spawn a thread to listen for incoming messages from client, handle replies and routing as well
                 Router.executor.submit(new ClientSocketMaintainer(clientSocket));
             }
         } catch (Exception e) {

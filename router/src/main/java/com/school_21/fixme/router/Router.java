@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Router {
-    static {
-        System.setProperty("lombok.extern.slf4j.Slf4j.SimpleFormatter.format", "[%1$tF %1$tT] [\u001b[36;1mROUTER\u001b[0m] [%4$-7s] %5$s %n");
-    }
     public static final RoutingTable routingTable = new RoutingTable();
     public static final ExecutorService executor = Executors.newFixedThreadPool(100);
 

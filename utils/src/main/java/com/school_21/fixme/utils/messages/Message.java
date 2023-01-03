@@ -1,6 +1,5 @@
 package com.school_21.fixme.utils.messages;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.net.Socket;

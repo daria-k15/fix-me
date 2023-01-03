@@ -33,7 +33,7 @@ public class ClassificationProcessor extends RequestHandler {
             log.info("Message classified as [ACCEPT]");
             request.setRequestType(RequestType.ACCEPT);
         } else {
-            return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
+            return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Unknown message type"));
         }
         return next.process(request);
     }

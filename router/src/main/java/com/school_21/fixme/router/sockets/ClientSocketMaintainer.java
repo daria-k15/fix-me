@@ -14,14 +14,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 @Slf4j
 public class ClientSocketMaintainer implements Runnable {
     private Socket socket;
     private String socketName;
 
-    public ClientSocketMaintainer(Socket socket){
+    public ClientSocketMaintainer(Socket socket) {
         this.socket = socket;
         String ip = socket.getInetAddress().toString();
         int port = socket.getPort();
@@ -38,13 +37,13 @@ public class ClientSocketMaintainer implements Runnable {
         String inLine;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            while((inLine = in.readLine()) != null) {
+            while ((inLine = in.readLine()) != null) {
                 Response response = handler.process(new Request(socket, new Message(inLine)));
-                if (response != null){
+                if (response != null) {
                     response.send();
                 }
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error(String.format("Got error while processing message from %s %s", socketName, e.getMessage()));
         }
         // Delete RouteEntry when this thread is done processing

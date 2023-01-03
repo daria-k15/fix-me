@@ -12,15 +12,6 @@ public class Orders {
     private String price;
     private String clientId;
 
-    public Orders(String market, String instrument, String quantity, String price, String clientId){
-        this.market = market;
-        this.instrument = instrument;
-        this.quantity = quantity;
-        this.price = price;
-        this.clientId = clientId;
-        this.validateOrder();
-    }
-
     public Orders(Message message) {
         this.market =     message.get("103");
         this.instrument = message.get("100");

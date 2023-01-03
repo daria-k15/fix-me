@@ -54,8 +54,7 @@ public class Broker {
             Integer amount = getAmount(orderType);
             Double price = getPrice(orderType);
 
-            Message fixMessage = FixProtocol.orderMessage(Broker.id, instrument,
-                    amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId), orderType);
+            Message fixMessage = FixProtocol.orderMessage(Broker.id, instrument, amount.toString(), price.toString(), Integer.toString(BrokerAccount.brokerRouteId), orderType);
             out.println(fixMessage);
             out.flush();
 
@@ -64,7 +63,7 @@ public class Broker {
     }
 
     private static OrderType selectOrderType() {
-        System.out.flush();
+        cls();
 
         System.out.println("Would you like to buy or sell?");
         while (true) {
@@ -75,13 +74,14 @@ public class Broker {
                 return OrderType.BUY;
             } else if (answer.equals("2")) {
                 return OrderType.SELL;
+            } else {
+                System.out.println("Unknown type. Try again, please");
             }
-            System.out.println("Unknown type. Try again, please");
         }
     }
 
     private static Instrument selectInstrument(Market market) {
-        System.out.flush();
+        cls();
 
         int count = 1;
         for (Instrument instrument : market.getInstruments()) {
@@ -90,20 +90,18 @@ public class Broker {
         }
 
         while (true) {
-            try {
-                System.out.print("\nSelect an instrument form 1 to 6: ");
-                int answer = scanner.nextInt();
-                if (answer > 0 && answer < 7) {
-                    return market.getInstruments().get(answer - 1);
-                }
-            } catch (Exception e) {
+            System.out.print("\nSelect an instrument form 1 to 6: ");
+            int answer = scanner.nextInt();
+            if (answer > 0 && answer < 7) {
+                return market.getInstruments().get(answer - 1);
+            } else {
                 System.out.println("Invalid number. Try again!");
             }
         }
     }
 
     private static Double getPrice(OrderType type) {
-        System.out.flush();
+        cls();
 
         String order;
         if (type.equals(OrderType.BUY)) {
@@ -114,7 +112,7 @@ public class Broker {
         while (true) {
             try {
                 System.out.print(order);
-                return scanner.nextDouble();
+                return Double.parseDouble(scanner.nextLine());
             } catch (Exception e) {
                 System.out.println("Unit must be a number!");
             }
@@ -122,7 +120,7 @@ public class Broker {
     }
 
     private static Integer getAmount(OrderType type) {
-        System.out.flush();
+        cls();
 
         String order;
         if (type.equals(OrderType.BUY)) {
@@ -131,15 +129,21 @@ public class Broker {
             order = "How many units would you like to sell: ";
         }
         while (true) {
+            System.out.print(order);
             try {
-                System.out.print(order);
-                return scanner.nextInt();
+                return Integer.parseInt(scanner.nextLine());
             } catch (Exception e) {
                 System.out.println("Must be an integer!");
             }
         }
     }
 
+    private static void cls() {
+        if (!System.getProperty("os.name").startsWith("Win")) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        }
+    }
 
     private static void receivedMessage(String logonMsg) {
         Message msg = new Message(logonMsg);

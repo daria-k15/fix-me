@@ -21,7 +21,7 @@ public class RelayProcessor extends RequestHandler {
             if (entry != null) {
                 return new Response(entry.getSocket(), request.getMessage());
             } else {
-                return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
+                return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Market unknown"));
             }
         }
         if (request.getRequestType() == RequestType.ACCEPT || request.getRequestType() == RequestType.REJECT) {
@@ -31,9 +31,9 @@ public class RelayProcessor extends RequestHandler {
             if (entry != null) {
                 return new Response(entry.getSocket(), request.getMessage());
             } else {
-                return new Response(entry.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
+                return new Response(entry.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Broker no longer connected"));
             }
         }
-        return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
+        return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Unhandled message"));
     }
 }

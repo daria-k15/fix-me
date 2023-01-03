@@ -21,7 +21,7 @@ public class ValidationProcessor extends RequestHandler{
             return next.process(request);
         } catch (Exception e) {
             log.warn("Message is invalid");
-            return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
+            return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Message is invalid"));
         }
     }
 }
