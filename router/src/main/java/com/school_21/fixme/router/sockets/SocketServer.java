@@ -6,6 +6,7 @@ import com.school_21.fixme.router.routing.BrokerRouteEntry;
 import com.school_21.fixme.router.routing.MarketRouteEntry;
 import com.school_21.fixme.router.routing.RouteEntry;
 import com.school_21.fixme.utils.FixProtocol;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.PrintWriter;
 import java.net.Inet4Address;
@@ -13,9 +14,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+@Slf4j
 public class SocketServer implements Runnable {
-    private static final Logger log = Logger.getLogger("Router");
-
     private Integer port;
     private Integer backlog;
     private String type;
@@ -55,7 +55,7 @@ public class SocketServer implements Runnable {
                 Router.executor.submit(new ClientSocketMaintainer(clientSocket));
             }
         } catch (Exception e) {
-            log.severe("Couldn't start Broker Server: " + e.getMessage());
+            log.error("Couldn't start Broker Server: " + e.getMessage());
         }
     }
 }

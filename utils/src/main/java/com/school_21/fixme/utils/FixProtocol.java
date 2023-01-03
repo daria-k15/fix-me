@@ -5,6 +5,7 @@ import com.school_21.fixme.utils.exceptions.InvalidCheckSumException;
 import com.school_21.fixme.utils.exceptions.InvalidCodePosition;
 import com.school_21.fixme.utils.messages.Message;
 import com.school_21.fixme.utils.orders.OrderType;
+import com.school_21.fixme.utils.orders.Orders;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -191,11 +192,27 @@ public class FixProtocol {
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 
-    public static Message identifyMessage(String id, String name) {
+    public static Message identifyMessage(String id) {
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + id + MSG_DELIMITER);
         body.append(MARKET_NAME + MSG_DELIMITER);
         String header = constructMessage(body.toString(), OrderType.IDENTIFY);
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
+    }
+
+    public static Message rejectOrder(Orders order) {
+        StringBuilder body = new StringBuilder();
+        body.append(USERNAME + order.getClientId() + MSG_DELIMITER);
+        body.append(MARKET_NAME + MSG_DELIMITER);
+        String header = constructMessage(body.toString(), OrderType.REJECT);
+        return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
+    }
+
+    public static Message acceptOrder(Orders order) {
+        StringBuilder body = new StringBuilder();
+        body.append(USERNAME + order.getClientId() + MSG_DELIMITER);
+        body.append(MARKET_NAME + MSG_DELIMITER);
+        String header = constructMessage(body.toString(), OrderType.ACCEPT);
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 }

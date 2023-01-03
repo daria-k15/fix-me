@@ -17,6 +17,6 @@ public class Market {
 
     public Instrument instrumentByCode(String name) {
         return instruments.stream().filter(it ->
-                it.getCode().equalsIgnoreCase(name)).findFirst().orElse(null);
+                it.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }

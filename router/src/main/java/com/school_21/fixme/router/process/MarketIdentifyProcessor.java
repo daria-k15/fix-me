@@ -26,6 +26,6 @@ public class MarketIdentifyProcessor extends RequestHandler{
             log.info("Market name {} added to {} in routing table", name, id);
             return null;
         }
-        return new Response(request.getSocket(), FixProtocol.failResponse(request.getSocket().toString()));
+        return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553")));
     }
 }

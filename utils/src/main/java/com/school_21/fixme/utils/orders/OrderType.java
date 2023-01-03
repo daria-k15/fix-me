@@ -6,7 +6,9 @@ public enum OrderType {
 
     LOGON("L"),
     ERROR("E"),
-    IDENTIFY("I");
+    IDENTIFY("I"),
+    REJECT("3"),
+    ACCEPT("4");
 
     public final String value;
 
