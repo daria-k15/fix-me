@@ -1,5 +1,6 @@
 package com.school_21.fixme.router.process;
 
+import com.school_21.fixme.router.entity.MessageHandler;
 import com.school_21.fixme.router.request.Request;
 import com.school_21.fixme.router.request.RequestType;
 import com.school_21.fixme.router.response.Response;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClassificationProcessor extends RequestHandler {
 
+    private final MessageHandler messageHandler = new MessageHandler();
     public ClassificationProcessor(RequestHandler handler) {
         super(handler);
     }
@@ -19,6 +21,7 @@ public class ClassificationProcessor extends RequestHandler {
         if (msgType.equals("1")) {
             log.info("Message classified as [BUY]");
             request.setRequestType(RequestType.BUY);
+//            messageHandler.save(request.getMessage());
         } else if (msgType.equals("2")) {
             log.info("Message classified as [SELL]");
             request.setRequestType(RequestType.SELL);
