@@ -35,7 +35,7 @@ public class Broker {
         out = new PrintWriter(socket.getOutputStream());
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        //Logon msg
+//        Logon msg
         String serverResponse = in.readLine();
         log.info("Received: {}", serverResponse);
 
@@ -90,12 +90,16 @@ public class Broker {
         }
 
         while (true) {
-            System.out.print("\nSelect an instrument form 1 to 6: ");
-            int answer = scanner.nextInt();
-            if (answer > 0 && answer < 7) {
-                return market.getInstruments().get(answer - 1);
-            } else {
-                System.out.println("Invalid number. Try again!");
+            try {
+                System.out.print("\nSelect an instrument form 1 to 6: ");
+                int answer = Integer.parseInt(scanner.nextLine());
+                if (answer > 0 && answer < 7) {
+                    return market.getInstruments().get(answer - 1);
+                } else {
+                    System.out.println("Invalid number. Try again!");
+                }
+            } catch (Exception e) {
+                System.out.println("Must be a number!");
             }
         }
     }
@@ -149,7 +153,7 @@ public class Broker {
         Message msg = new Message(logonMsg);
         if (msg.get("35").equals("L")) {
             Broker.id = msg.get("553");
-            log.info("Broker added to routingTable! BrokerId: {}", BrokerAccount.brokerRouteId);
+            log.info("Broker added to routingTable! BrokerId: {}", ++BrokerAccount.brokerRouteId);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.school_21.fixme.router.sockets;
 
 import com.school_21.fixme.router.Router;
+import com.school_21.fixme.router.database.Database;
 import com.school_21.fixme.router.process.ClassificationProcessor;
 import com.school_21.fixme.router.process.RelayProcessor;
 import com.school_21.fixme.router.process.RequestHandler;
@@ -14,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.sql.SQLException;
 
 @Slf4j
 public class ClientSocketMaintainer implements Runnable {
@@ -40,11 +42,16 @@ public class ClientSocketMaintainer implements Runnable {
             while ((inLine = in.readLine()) != null) {
                 Response response = handler.process(new Request(socket, new Message(inLine)));
                 if (response != null) {
+                    Database.saveTransaction(response.getMessage());
                     response.send();
                 }
             }
         } catch (IOException e) {
             log.error(String.format("Got error while processing message from %s %s", socketName, e.getMessage()));
+        } catch (SQLException e) {
+            System.out.println("Smth wring with db in clientmaintainer " + e.getMessage());
+        } catch (ClassNotFoundException e){
+            System.out.println("AAAAAAAAAAA");
         }
         // Delete RouteEntry when this thread is done processing
         log.info(String.format("Socket maintainer for %s shutting down", socketName));

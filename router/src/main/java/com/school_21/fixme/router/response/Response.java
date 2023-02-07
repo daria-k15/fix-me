@@ -1,11 +1,13 @@
 package com.school_21.fixme.router.response;
 
 import com.school_21.fixme.utils.messages.Message;
+import lombok.Data;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+@Data
 public class Response {
     private Socket destination;
     private Message message;
