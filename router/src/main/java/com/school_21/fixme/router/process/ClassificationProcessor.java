@@ -4,10 +4,10 @@ import com.school_21.fixme.router.request.Request;
 import com.school_21.fixme.router.request.RequestType;
 import com.school_21.fixme.router.response.Response;
 import com.school_21.fixme.utils.FixProtocol;
-import lombok.extern.slf4j.Slf4j;
+import java.util.logging.Logger;
 
-@Slf4j
 public class ClassificationProcessor extends RequestHandler {
+    private static final Logger log = Logger.getLogger( "Router" );
 
     public ClassificationProcessor(RequestHandler handler) {
         super(handler);
@@ -30,8 +30,8 @@ public class ClassificationProcessor extends RequestHandler {
             log.info("Message classified as [REJECT]");
             request.setRequestType(RequestType.REJECT);
         } else if (msgType.equals("4")) {
-            log.info("Message classified as [ACCEPT]");
-            request.setRequestType(RequestType.ACCEPT);
+            log.info("Message classified as [EXECUTE]");
+            request.setRequestType(RequestType.EXECUTE);
         } else {
             return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Unknown message type"));
         }

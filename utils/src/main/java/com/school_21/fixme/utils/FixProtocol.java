@@ -181,7 +181,7 @@ public class FixProtocol {
         StringBuilder body = new StringBuilder();
         body.append(USERNAME + order.getClientId() + MSG_DELIMITER);
         body.append(MARKET_NAME + MSG_DELIMITER);
-        String header = constructMessage(body.toString(), OrderType.ACCEPT);
+        String header = constructMessage(body.toString(), OrderType.EXECUTE);
         return new Message(header + body + MSG_CHECKSUM + checkSumGenerator(header + body));
     }
 }

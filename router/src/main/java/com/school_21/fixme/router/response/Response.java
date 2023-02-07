@@ -12,7 +12,6 @@ public class Response {
     private Socket destination;
     private Message message;
 
-    public Response(){}
     public Response (Socket destination, Message message){
         this.destination = destination;
         this.message = message;

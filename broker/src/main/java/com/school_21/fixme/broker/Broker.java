@@ -6,20 +6,22 @@ import com.school_21.fixme.market.markets.Market;
 import com.school_21.fixme.utils.FixProtocol;
 import com.school_21.fixme.utils.messages.Message;
 import com.school_21.fixme.utils.orders.OrderType;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
-@Slf4j
 public class Broker {
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [\u001b[36;1mBROKER\u001b[0m] [%4$-7s] %5$s %n");
+    }
     private static final Scanner scanner = new Scanner(System.in);
     private static Socket socket;
     private static PrintWriter out;
     private static BufferedReader in;
+    private static final Logger log = Logger.getLogger( "Broker" );
 
     private static String id;
 
@@ -29,15 +31,15 @@ public class Broker {
         try {
             socket = new Socket("localhost", 5000);
         } catch (Exception e) {
-            log.error(String.format("Broker couldn't start, router might be unavailable: %s", e.getMessage()));
+            log.severe(String.format("Broker couldn't start, router might be unavailable: %s", e.getMessage()));
             System.exit(1);
         }
         out = new PrintWriter(socket.getOutputStream());
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-//        Logon msg
+        //        Logon msg
         String serverResponse = in.readLine();
-        log.info("Received: {}", serverResponse);
+        log.info(String.format("Received: %s", serverResponse));
 
         receivedMessage(serverResponse);
         createAndHandleOrder();
@@ -153,7 +155,7 @@ public class Broker {
         Message msg = new Message(logonMsg);
         if (msg.get("35").equals("L")) {
             Broker.id = msg.get("553");
-            log.info("Broker added to routingTable! BrokerId: {}", ++BrokerAccount.brokerRouteId);
+            log.info(String.format("Broker added to routingTable! BrokerId: %s", ++BrokerAccount.brokerRouteId));
         }
     }
 
@@ -162,7 +164,7 @@ public class Broker {
         try {
             message = new Message(in.readLine());
         } catch (Exception e) {
-            log.error("Connection to router lost");
+            log.severe("Connection to router lost");
             System.exit(1);
         }
         String msgType = message.get("35");
