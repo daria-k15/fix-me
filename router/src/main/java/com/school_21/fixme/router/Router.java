@@ -1,6 +1,7 @@
 package com.school_21.fixme.router;
 
 
+import com.school_21.fixme.router.database.Database;
 import com.school_21.fixme.router.routing.RoutingTable;
 import com.school_21.fixme.router.sockets.SocketServer;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,12 @@ public class Router {
 
     public static void main(String[] args) {
         log.info("-----Router is starting-----");
+
+        try {
+            Database.createTransactionSchema();
+        } catch (Exception e){
+            System.out.println("Smth wrong with database! " + e.getMessage());
+        }
 
         executor.submit(new SocketServer(5000, "broker"));
         executor.submit(new SocketServer(5001, "market"));
