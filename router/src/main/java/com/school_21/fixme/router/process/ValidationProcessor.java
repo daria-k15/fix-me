@@ -3,8 +3,6 @@ package com.school_21.fixme.router.process;
 import com.school_21.fixme.router.request.Request;
 import com.school_21.fixme.router.response.Response;
 import com.school_21.fixme.utils.FixProtocol;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.logging.Logger;
 
 public class ValidationProcessor extends RequestHandler{
