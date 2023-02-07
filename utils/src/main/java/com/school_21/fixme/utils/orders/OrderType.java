@@ -8,7 +8,7 @@ public enum OrderType {
     ERROR("E"),
     IDENTIFY("I"),
     REJECT("3"),
-    ACCEPT("4");
+    EXECUTE("4");
 
     public final String value;
 

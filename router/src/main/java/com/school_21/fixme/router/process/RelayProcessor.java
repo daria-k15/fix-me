@@ -24,7 +24,7 @@ public class RelayProcessor extends RequestHandler {
                 return new Response(request.getSocket(), FixProtocol.failResponse(request.getMessage().get("553"), "Market unknown"));
             }
         }
-        if (request.getRequestType() == RequestType.ACCEPT || request.getRequestType() == RequestType.REJECT) {
+        if (request.getRequestType() == RequestType.EXECUTE || request.getRequestType() == RequestType.REJECT) {
             String brokerId = request.getMessage().get("553");
             RouteEntry entry = Router.routingTable.findEntry(brokerId);
 

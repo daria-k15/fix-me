@@ -4,16 +4,19 @@ package com.school_21.fixme.router;
 import com.school_21.fixme.router.database.Database;
 import com.school_21.fixme.router.routing.RoutingTable;
 import com.school_21.fixme.router.sockets.SocketServer;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-@Slf4j
 public class Router {
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format","[%1$tF %1$tT] [\u001b[32;1mROUTER\u001b[0m] [%4$-7s] %5$s %n");
+    }
     public static final RoutingTable routingTable = new RoutingTable();
     public static final ExecutorService executor = Executors.newFixedThreadPool(100);
+    public static final Logger log = Logger.getLogger("Router");
 
     public static void main(String[] args) {
         log.info("-----Router is starting-----");
@@ -29,7 +32,7 @@ public class Router {
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e){
-            log.error("Interrupted request: " + e.getMessage());
+            log.severe("Interrupted request: " + e.getMessage());
             System.exit(1);
         }
     }

@@ -5,15 +5,18 @@ import com.school_21.fixme.market.markets.Instrument;
 import com.school_21.fixme.utils.FixProtocol;
 import com.school_21.fixme.utils.messages.Message;
 import com.school_21.fixme.utils.orders.Orders;
-import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Logger;
 
-@Slf4j
-public class App {
+public class Market {
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [\u001b[35;1mMARKET\u001b[0m] [%4$-7s] %5$s %n");
+    }
+    public static final Logger log = Logger.getLogger( "Market" );
     private static Socket socket;
     private static PrintWriter out;
     private static BufferedReader in;
@@ -25,7 +28,7 @@ public class App {
         try {
             socket = new Socket("localhost", 5001);
         } catch (Exception e){
-            log.error("Market cannot start, router might be unavailable {}", e.getMessage());
+            log.severe("Market cannot start, router might be unavailable " + e.getMessage());
             socket.close();
             System.exit(1);
         }
@@ -47,14 +50,14 @@ public class App {
                 String inputLine = in.readLine();
 
                 if (inputLine == null){
-                    log.error("Connection to router lost");
+                    log.severe("Connection to router lost");
                     break;
                 }
                 log.info(String.format("Received message: %s", inputLine));
                 Message msg = validateInitialMessage(new Message(inputLine));
 
                 if (!msg.isValid()){
-                    log.error(String.format("Sending :: Rejection :: %s", msg.toString()));
+                    log.severe(String.format("Sending :: Rejection :: %s", msg.toString()));
                     out.println(msg.toString());
                     break;
                 }
@@ -79,7 +82,7 @@ public class App {
                         throw new Exception("Unknown order type");
                 }
             } catch (Exception e){
-                log.error("Rejection: {}", e.getMessage());
+                log.severe("Rejection: " + e.getMessage());
                 FixProtocol.rejectOrder(order);
             }
         }
@@ -98,9 +101,9 @@ public class App {
     }
 
     private static void identifyMarket() {
-        Message name = FixProtocol.identifyMessage(App.market.getId());
+        Message name = FixProtocol.identifyMessage(Market.market.getId());
         out.println(name);
-        log.info(String.format("Sent market name [%s] to router", App.market.getName()));
+        log.info(String.format("Sent market name [%s] to router", Market.market.getName()));
     }
 
     private static Message validateInitialMessage(Message msg) {
@@ -134,11 +137,11 @@ public class App {
                 instrument.setAvailableAmount(instrument.getAvailableAmount() - requestedAmount);
                 sendMessage(FixProtocol.acceptOrder(order));
             } else {
-                log.error("Rejected : Not enough {} units to complete order", instrument.getName());
+                log.severe(String.format("Rejected : Not enough %s units to complete order", instrument.getName()));
                 sendMessage(FixProtocol.rejectOrder(order));
             }
         } else {
-            log.error("Rejected : Buy price for {} is too low", instrument.getName());
+            log.severe(String.format("Rejected : Buy price for %s is too low", instrument.getName()));
             sendMessage(FixProtocol.rejectOrder(order));
         }
     }
@@ -152,7 +155,7 @@ public class App {
             instrument.setAvailableAmount(instrument.getAvailableAmount() + requestedSellAmount);
             sendMessage(FixProtocol.acceptOrder(order));
         } else {
-            log.error("Rejected: Sell price for {} is too high", instrument.getName());
+            log.severe(String.format("Rejected: Sell price for %s is too high", instrument.getName()));
             sendMessage(FixProtocol.rejectOrder(order));
         }
     }
